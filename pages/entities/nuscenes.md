@@ -4,7 +4,7 @@ type: entity
 created: 2026-04-07
 updated: 2026-04-07
 tags: [dataset, multi-sensor, benchmark]
-sources: []
+sources: [gemini-depth-maps-datasets, gemini-radar-doppler-dynamic-gs]
 ---
 
 # nuScenes
@@ -44,8 +44,20 @@ Need to create a YAML config for virtual-sensor-suite matching nuScenes geometry
 
 > **Open question:** Which nuScenes scenes are best for initial SplatAD training? Want diversity: day/night, rain/clear, intersection/highway.
 
+## Dataset Comparison
+| Feature | [[nuscenes]] | [[kitti]] | [[waymo-open-dataset]] | [[argoverse]] |
+|---------|------------|---------|---------------------|-------------|
+| Cameras | 6 (360-deg) | 2 stereo pairs (front) | 5 | Surround |
+| LiDAR | 32-beam | 64-beam | 5 sensors | 310m range |
+| Radar | 5 radars | None | No public | None |
+| Conditions | Day/night/rain | Day only | Day/night | Urban US |
+
 ## Related
 - [[splatad]] — trains on nuScenes
 - [[kitti]] — simpler dataset used for proof-of-concept
 - [[waymo-open-dataset]] — comparable large-scale multi-sensor AV dataset
+- [[argoverse]] — long-range LiDAR alternative
+- [[radar-simulation]] — nuScenes is the primary dataset with radar data
+- [[sensor-fusion]] — nuScenes multi-modal data enables fusion research
+- [[mmdetection3d]] — standard framework for nuScenes benchmarks
 - [[sim-to-real-transfer]] — nuScenes as evaluation benchmark

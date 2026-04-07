@@ -4,7 +4,7 @@ type: concept
 created: 2026-04-07
 updated: 2026-04-07
 tags: [lidar, sensor-sim, realism]
-sources: [zhou2026-av-scenario-review]
+sources: [zhou2026-av-scenario-review, gemini-nerf-gs-fundamentals, gemini-depth-maps-datasets]
 ---
 
 # LiDAR Simulation
@@ -43,15 +43,24 @@ Volumetric rendering along LiDAR rays through a neural radiance field. [[neurad]
 | Range RMSE | Per-point range error |
 | Detection AP (sim vs real) | Perception-level: does a detector trained on sim work on real? |
 
+## LiDAR as Physical Reality Check
+In 3DGS scenes, "floaters" (semi-transparent Gaussians in empty space) can fool cameras but not LiDAR. The Monte Carlo ray-drop model evaluates physical density — low-density floaters are passed through, correctly identifying them as non-physical artifacts. This makes LiDAR the authoritative sensor for geometric truth in simulation.
+
+**Depth map cross-validation**: Compare camera depth tensor (`render_package["depth"]`, float32 meters) with LiDAR range at the same pixel. Agreement confirms calibration; disagreement flags floaters or miscalibration. See [[sensor-fusion]].
+
 ## Key Open Problems
 - Intensity models are learned, not physics-based — they don't generalize across sensor types or environments.
 - Ray-drop depends on material properties that aren't explicitly modeled in most 3DGS approaches.
 - Beam divergence is ignored by most methods except LiDAR-GS.
 - No standard benchmark for LiDAR simulation fidelity (unlike images, which have FID/LPIPS).
+- [[radar-simulation]] fidelity is even less mature — most work ignores radar entirely.
 
 > **Open question:** Can we improve [[splatad]]'s ray-drop MLP by conditioning on incidence angle and material-proxy features?
 
 ## Related
 - [[3d-gaussian-splatting]] — underlying representation
 - [[splatad]] — primary system under study
+- [[radar-simulation]] — complementary active sensor simulation
+- [[sensor-fusion]] — LiDAR as geometric ground truth in fusion
 - [[sim-to-real-transfer]] — downstream validation
+- [[open3d]] — point cloud processing and evaluation metrics
