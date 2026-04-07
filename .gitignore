@@ -1,0 +1,5 @@
+# Raw source PDFs (large binaries — track separately or use Git LFS)
+raw/*.pdf
+raw/assets/*.png
+raw/assets/*.jpg
+raw/assets/*.gif
