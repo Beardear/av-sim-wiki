@@ -4,7 +4,7 @@ type: concept
 created: 2026-04-07
 updated: 2026-04-07
 tags: [scene-editing, safety, actor-manipulation]
-sources: [zhou2026-av-scenario-review]
+sources: [zhou2026-av-scenario-review, gemini-radar-doppler-dynamic-gs]
 ---
 
 # Scene Editing for AV Simulation
@@ -57,6 +57,18 @@ The survey identifies five fundamental 3DGS scene editing operations for AV:
 - **Visual realism**: FID between edited and real scenes
 - **Perception consistency**: Detection AP on edited scenes should be comparable to unedited
 - **Multi-sensor coherence**: Detections from camera and LiDAR should agree on edited actors
+
+## Dynamic Object Simulation (Industry Approach)
+Standard 3DGS freezes the world — dynamic actors are "baked in" as static geometry. The industry solves this via **compositional scene decomposition**:
+
+1. **Masking & tracking**: Off-board perception identifies dynamic objects with 3D bounding boxes across frames
+2. **Static background**: Masked-out dynamic pixels/points → train background-only 3DGS
+3. **Rigid body actors (vehicles)**: Train object-centric Gaussian model per actor in local coordinates. At simulation time, apply SE(3) transforms per frame for any desired trajectory
+4. **Non-rigid actors (pedestrians)**: Use deformation MLPs (4D GS) that predict position/covariance offsets conditioned on time, or skeleton-driven splatting via SMPL parametric human model
+5. **Asset libraries**: Extract and catalog actor Gaussians for reuse across scenes (e.g., [[astrosplat]]). Enables novel scenario generation by inserting actors from different recordings
+
+### Limitation: Novel Viewpoints
+If a simulated actor takes a trajectory not seen in training data, the GS model lacks views for unseen angles → blurry/stretched artifacts. Generative world models (diffusion-based video/LiDAR generation) are emerging to "hallucinate" missing angles.
 
 > **Open question:** How to handle shadows and reflections of removed/inserted actors? These are view-dependent effects baked into the Gaussian representation.
 
