@@ -2,7 +2,7 @@
 title: Autonomous Driving Simulation — Overview
 type: overview
 created: 2026-04-07
-updated: 2026-04-07
+updated: 2026-04-10
 tags: [overview, av-simulation]
 sources: []
 ---
@@ -17,6 +17,11 @@ Autonomous vehicles need to handle billions of miles of diverse driving scenario
 ### Traditional Approaches
 - **Game-engine sims** (CARLA, LGSVL): handcrafted 3D assets, physics-based rendering. High control but poor realism — large sim-to-real gap, especially for LiDAR and camera appearance.
 - **Log replay**: replay real sensor logs with modified ego trajectories. Perfect realism for unchanged parts, but cannot modify other actors or generate novel viewpoints far from the original trajectory.
+
+### Industrial Platforms (NVIDIA)
+- **[[nvidia-omniverse]]**: 3D simulation engine with RTX ray-traced, physically accurate multi-sensor rendering. Foundation for NVIDIA's AV and robotics simulation.
+- **[[nvidia-drive-sim]]**: AV-specific simulation on Omniverse. Multi-sensor (camera, radar, LiDAR), L2-L5. Includes AlpaSim (open-source closed-loop testing) and NuRec (neural reconstruction from sensor logs).
+- **[[nvidia-cosmos]]**: Generative World Foundation Models (Predict, Transfer, Reason) that synthesize physics-aware video from text, images, or structured sensor data. Cosmos Transfer is directly AV-relevant — accepts LiDAR/depth/segmentation, outputs photoreal driving video. Open-weight. Complementary to the per-scene neural reconstruction approach below.
 
 ### Neural Reconstruction (Current Frontier)
 The dominant emerging approach: reconstruct real-world scenes from sensor logs using neural representations, then re-render from novel viewpoints and with scene edits.

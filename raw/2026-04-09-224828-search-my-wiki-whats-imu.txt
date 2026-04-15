@@ -1,0 +1,625 @@
+ ▐▛███▜▌   Claude Code v2.1.98
+▝▜█████▛▘  Opus 4.6 (1M context) · Claude Max
+  ▘▘ ▝▝    /workspace
+
+❯ search my wiki, what's IMU?                                                   
+
+  Searched for 1 pattern, listed 1 directory (ctrl+o to expand)
+
+● I don't have a wiki search tool available in this environment, and there's
+  nothing in memory about where your wiki lives. Could you tell me:
+
+  1. Where is your wiki hosted (Confluence, Notion, GitHub wiki, a local
+  directory, etc.)?
+  2. How would you like me to access it?
+
+  Once I know, I can save it as a reference memory so I don't need to ask again
+  next time.
+
+❯ create a SKILL called wiki, this skill will search in this project:           
+  /workspace/wiki                                                               
+
+  Read 2 files, listed 2 directories (ctrl+o to expand)
+
+● Now I have a clear picture of the wiki. Creating the skill.
+
+● Write(~/.claude/skills/wiki/SKILL.md)
+  ⎿  Wrote 41 lines to ../home/devuser/.claude/skills/wiki/SKILL.md
+       1 ---
+       2 name: wiki
+       3 description: Search the autonomous driving simulation wiki at /w
+         orkspace/wiki to answer questions. Use whenever the user asks ab
+         out a concept, entity, paper, or comparison that might live in t
+         he wiki (e.g. "what's IMU?", "search my wiki for X", "do we have
+          a page on Y?").
+       4 disable-model-invocation: true
+       5 argument-hint: "<search query or question>"
+       6 ---
+       7 
+       8 Search `/workspace/wiki` for information relevant to `$ARGUMENTS
+         ` and answer the user's question grounded in what you find.
+       9 
+      10 ## Layout reminder
+     … +31 lines (ctrl+o to expand)
+
+● Skill created at /home/devuser/.claude/skills/wiki/SKILL.md.
+
+  It's set with disable-model-invocation: true, matching your devlog skill — so
+  it runs only when you invoke /wiki <query> explicitly, not automatically. If
+  you'd rather I search the wiki automatically whenever you ask a domain
+  question, I can flip that flag.
+
+  Want me to run it now for your original question (/wiki IMU)?
+
+✻ Cogitated for 33s
+
+❯ /wiki what is IMU?                                                            
+
+  Searched for 1 pattern, read 2 files (ctrl+o to expand)
+
+● The wiki doesn't define IMU. The only mention is in
+  /workspace/wiki/pages/entities/kitti.md:18, which lists "GPS/IMU" as part of
+  the KITTI sensor suite — no explanation of what it is, just that KITTI
+  includes one. A broader grep for "IMU" and "inertial" across the wiki
+  (excluding raw/) turned up nothing else.
+
+  So: the wiki has no page on IMU, and no definition of the term. The closest
+  signal is that IMU is treated as a sensor modality bundled with GPS in the
+  KITTI sensor suite, but nuScenes' page (pages/entities/nuscenes.md:27) and the
+   wiki's stated focus areas (SCHEMA.md:6) only call out camera, LiDAR, and
+  radar — IMU is not part of the wiki's named simulation targets.
+
+  Want me to:
+  1. Ingest a source on IMUs and create a pages/concepts/imu.md or
+  pages/entities/imu.md page, or
+  2. Just answer from general knowledge outside the wiki?
+
+❯ go option1, but search IMU and GPS together if they are closely related       
+
+● Good call on treating them together — in AV they're almost always fused
+  (GNSS/INS). One quick caveat: you asked me to "ingest a source," but there's
+  no document in raw/ — so I'll build the page from general knowledge and mark
+  sources: []. If you want a specific paper ingested later, drop it in raw/ and
+  I'll rework the page.
+
+  Let me check the two other dataset pages so I can wire up inbound links (avoid
+   orphans) and match tone.
+
+  Read 3 files (ctrl+o to expand)
+
+● Now creating the concept page plus inbound links from KITTI and nuScenes so
+  it's not orphaned.
+
+● Write(wiki/pages/concepts/gps-imu.md)
+  ⎿  Wrote 56 lines to wiki/pages/concepts/gps-imu.md
+       1 ---
+       2 title: GPS/IMU (Ego-Pose Sensors)
+       3 type: concept
+       4 created: 2026-04-09
+       5 updated: 2026-04-09
+       6 tags: [sensor, localization, ego-pose, ground-truth]
+       7 sources: []
+       8 ---
+       9 
+      10 # GPS/IMU — Ego-Pose Sensors
+     … +46 lines (ctrl+o to expand)
+
+● Update(wiki/pages/entities/kitti.md)
+  ⎿  Added 1 line, removed 1 line
+      15  ## Sensor Suite
+      16  - 2 stereo camera pairs (grayscale + color)
+      17  - 1 LiDAR: Velodyne HDL-64E, 64 channels, ~130K points/sweep
+      18 -- GPS/IMU                                                      
+      18 +- [[gps-imu|GPS/IMU]]                                          
+      19  
+      20  ## Role in Our Project
+      21  Used for initial proof-of-concept:
+
+● Update(wiki/pages/entities/nuscenes.md)
+  ⎿  Added 1 line
+      16  - **6 cameras**: 360-degree surround view (front, front-left, f
+          ront-right, back, back-left, back-right)
+      17  - **1 LiDAR**: Velodyne HDL-32E, 32 channels, ~34K points/sweep
+           (after filtering)
+      18  - **5 radars**: Continental ARS408 long-range radars, front + 4
+           corners
+      19 +- **[[gps-imu|GPS/IMU]]**: fused ego-pose exposed per frame (un
+         +derlying raw streams not primary interface)                    
+      20  
+      21  ## Scale
+      22  - 1000 scenes, each 20 seconds
+
+● Update(wiki/index.md)
+  ⎿  Added 1 line, removed 1 line
+      1  ---
+      2  title: Wiki Index
+      3  type: index
+      4 -updated: 2026-04-07                                             
+      4 +updated: 2026-04-09                                             
+      5  ---
+      6  
+      7  # Autonomous Driving Simulation Wiki — Index
+
+● Update(wiki/index.md)
+  ⎿  Added 1 line
+      15  - [Sim-to-Real Transfer](pages/concepts/sim-to-real-transfer.md
+          ) — Measuring and closing the domain gap between simulated and 
+          real sensor data
+      16  - [Scene Editing](pages/concepts/scene-editing.md) — Actor remo
+          val, insertion, trajectory modification in reconstructed scenes
+      17  - [AV Sim Framework (4-Step)](pages/concepts/av-sim-framework.m
+          d) — Reconstruct → Edit → Sim Import → Deploy pipeline (from Zh
+          ou et al. 2026)
+      18 +- [GPS/IMU (Ego-Pose Sensors)](pages/concepts/gps-imu.md) — Fus
+         +ed localization sensors providing ground-truth ego-pose for neu
+         +ral reconstruction                                             
+      19  
+      20  ## Entities — Systems (3DGS-based)
+      21  - [SplatAD](pages/entities/splatad.md) — Camera + LiDAR Gaussia
+          n splatting with dynamic actors (CVPR 2025)
+
+● Update(wiki/index.md)
+  ⎿  Added 1 line, removed 1 line
+      49  
+      50  ---
+      51  
+      52 -**Stats:** 5 concepts, 18 entities, 1 source, 0 comparisons | L
+         -ast updated: 2026-04-07                                        
+      52 +**Stats:** 6 concepts, 18 entities, 1 source, 0 comparisons | L
+         +ast updated: 2026-04-09                                        
+
+● Update(wiki/log.md)  ⎿  Added 8 lines
+       1  # Log
+       2  
+       3 +## [2026-04-09] add | GPS/IMU concept page                     
+       4 +Created `pages/concepts/gps-imu.md` covering GPS and IMU as fus
+         +ed ego-pose sensors (GNSS/INS). Written from general knowledge 
+         +— `sources: []`, no raw source ingested.                       
+       5 +- Combined GPS and IMU into a single concept page since they ar
+         +e almost always fused in AV stacks.                            
+       6 +- Framed as "not a simulation target but a load-bearing input" 
+         +— pose quality from GPS/IMU propagates into neural reconstructi
+         +on quality.                                                    
+       7 +- Added inbound links from `kitti.md` (converted existing "GPS/
+         +IMU" text to wiki link) and `nuscenes.md` (added sensor-suite b
+         +ullet).                                                        
+       8 +- Updated `index.md`: now 6 concepts, 18 entities, 1 source, 0 
+         +comparisons.                                                   
+       9 +- Two open questions flagged: pose-noise sensitivity of SplatAD
+         +/NeuRAD, and whether any method emits synthetic IMU for VIO.   
+      10 +                                                               
+      11  ## [2026-04-07] init | Wiki bootstrapped
+      12  Created wiki structure for Autonomous Driving Simulation domain
+          . Seeded with initial pages derived from project knowledge (PRO
+          GRESS.md) covering: SplatAD, NeuRAD, 3D Gaussian Splatting, nuS
+          cenes, KITTI, LiDAR simulation, scene editing, sim-to-real tran
+          sfer, and key reference papers.
+      13  
+
+● Done. Summary:
+
+  Created pages/concepts/gps-imu.md — a combined concept page covering GPS and
+  IMU as fused ego-pose sensors (GNSS/INS), with the framing that they're not a
+  simulation target in this wiki but a load-bearing input to neural
+  reconstruction because camera poses come from them.
+
+  Answer to "what is IMU?" from the new page: an Inertial Measurement Unit — a
+  3-axis accelerometer + 3-axis gyroscope (sometimes + magnetometer) running at
+  100–1000 Hz. It captures fast ego-motion everywhere but drifts unbounded,
+  which is why it's fused with GPS (drift-free but low-rate and occlusion-prone)
+   via a Kalman filter.
+
+  Wired up to avoid orphan status:
+  - pages/entities/kitti.md:18 — converted "GPS/IMU" to [[gps-imu|GPS/IMU]]
+  - pages/entities/nuscenes.md:19 — added a GPS/IMU bullet to the sensor suite
+
+  Updated index.md (now 6 concepts) and appended a log entry to log.md.
+
+  Caveat logged in the page frontmatter: sources: []. No paper was ingested —
+  the content is from general knowledge. If you drop an IMU/GNSS reference into
+  raw/, I can revise the page and add the proper source citation.
+
+  Two open questions flagged in the page for future investigation:
+  1. Pose-noise sensitivity of SplatAD/NeuRAD reconstruction
+  2. Whether any neural reconstruction method emits synthetic IMU for VIO-style
+  consumers
+
+✻ Baked for 2m 36s
+
+❯ what's IMU used for?                                                          
+
+● From the page I just created (pages/concepts/gps-imu.md), IMU serves three
+  roles in this wiki's domain:
+
+  1. Ego-pose estimation (primary use). Fused with GPS into a GNSS/INS solution
+  — IMU provides high-rate (100–1000 Hz) motion between low-rate GPS fixes and
+  bridges GPS dropouts in tunnels / urban canyons. The fused output is the
+  ego-vehicle pose (position + orientation over time). See
+  pages/concepts/gps-imu.md:24-26.
+  2. Ground-truth trajectory in AV datasets. [[kitti]] ships raw GPS/IMU;
+  [[nuscenes]] and [[waymo-open-dataset]] expose the fused result as per-frame
+  ego-pose. pages/concepts/gps-imu.md:30-33.
+  3. Upstream input to neural scene reconstruction. [[3d-gaussian-splatting]]
+  and [[neurad]] need accurate per-frame camera poses to converge — those poses
+  ultimately originate from GPS/IMU. Pose error propagates into reconstruction
+  quality (blurred Gaussians, failed convergence).
+  pages/concepts/gps-imu.md:35-37.
+
+  Not covered by the wiki: direct consumption of IMU by downstream models (e.g.,
+   visual-inertial odometry). The page flags this explicitly as an open question
+   — no ingested source addresses synthetic IMU streams for VIO consumers.
+  pages/concepts/gps-imu.md:46-48.
+
+❯ so IMU is to eatimate the location and moving speed of egos?                  
+
+● Roughly yes, but with two nuances from the page:
+
+  1. IMU doesn't directly measure location or speed. It measures specific force
+  (accelerometer) and angular rate (gyroscope) — pages/concepts/gps-imu.md:14.
+  Velocity and position come from integrating those signals once and twice
+  respectively; orientation comes from integrating the gyro. That integration is
+   why IMU "drifts — position error grows unbounded without external correction"
+   (pages/concepts/gps-imu.md:17).
+  2. It's 6-DoF pose, not just location + speed. The output is position and
+  orientation (heading, pitch, roll). In AV that full pose is what
+  reconstruction methods need, not just where the car is but where it's
+  pointing.
+
+  And the reason it's paired with GPS: GPS gives drift-free absolute position
+  but is slow (1–10 Hz) and fails in tunnels/urban canyons; IMU gives fast
+  relative motion but drifts. Fused, "GPS anchors IMU drift, and IMU bridges GPS
+   dropouts" (pages/concepts/gps-imu.md:24). Neither alone is sufficient for AV
+  ego-pose.
+
+❯ why position and orientation (heading, pitch, roll) is 6-DoF?                 
+
+● Not in the wiki — answering from general knowledge.
+
+  "Degrees of freedom" (DoF) = the number of independent parameters needed to
+  fully specify a rigid body's configuration in space. For a rigid body like a
+  car, you need:
+
+  3 translational DoF — position in space:
+  - x (forward/back)
+  - y (left/right)
+  - z (up/down)
+
+  3 rotational DoF — orientation around those axes:
+  - roll (rotation around the forward axis — car leaning left/right)
+  - pitch (rotation around the lateral axis — nose up/down)
+  - yaw / heading (rotation around the vertical axis — car turning left/right)
+
+  3 + 3 = 6 DoF. Any fewer and you can't fully describe where the car is and
+  which way it's pointing. Any more would be redundant for a rigid body
+  (deformable bodies like a human hand need many more).
+
+  Quick sanity check: a train on a track has only 1 DoF (position along the
+  rail). A boat on a flat lake has 3 DoF (x, y, yaw). A drone in open air has
+  the full 6.
+
+❯ for a car it has 6 DoF?                                                       
+
+● Yes — for pose purposes, a car is a 6-DoF rigid body. Even though a car mostly
+   drives on a 2D road, its body actually moves in all six:
+
+  - x, y — position on the road
+  - z — up/down (hills, speed bumps, potholes)
+  - yaw — steering/turning
+  - pitch — nose dives under braking, lifts under acceleration
+  - roll — body leans when cornering or on banked roads
+
+  So the ego-pose a GPS/IMU stack estimates is genuinely 6-DoF, and that's also
+  what neural reconstruction consumes for the camera pose.
+
+  Caveat — a different kind of "DoF": in motion planning / control, a car is
+  often described as having only 3 DoF (x, y, yaw) with a nonholonomic 
+  constraint (you can't strafe sideways — you have to turn the wheels and drive
+  forward). That's a statement about what motions are achievable, not about how
+  many numbers it takes to describe the body's orientation in space. Both
+  statements are correct; they answer different questions:
+
+  - "How many numbers to describe where the car is and which way it's pointing?"
+   → 6
+  - "How many independent directions can the car instantaneously move in?" → 2
+  (forward/back + steering), within a 3-DoF planar config space
+
+  For this wiki's domain (reconstruction, sensor sim), the 6-DoF answer is the
+  relevant one.
+
+❯ need to add some argument to the Skill "wiki": "update", skill will perform   
+  "Ingest a source" as indicated in /wiki/SCHEMA.md; "lint": skill will perform 
+   "Lint" as indicated in /wiki/SCHEMA.md                                       
+
+● I'll restructure the skill to dispatch on the first argument. Let me read it
+  first to make sure I don't lose the user's edit.
+
+  Read 1 file (ctrl+o to expand)
+
+● Write(~/.claude/skills/wiki/SKILL.md)
+  ⎿  Added 101 lines, removed 9 lines
+       1  ---
+       2  name: wiki
+       3 -description: Search the autonomous driving simulation wiki at /
+         -workspace/wiki to answer questions. Use whenever the user asks 
+         -about a concept, entity, paper, or comparison that might live i
+         -n the wiki (e.g. "what's IMU?", "search my wiki for X", "do we 
+         -have a page on Y?").                                           
+       3 +description: Search, update, or lint the autonomous driving sim
+         +ulation wiki at /workspace/wiki. Default mode searches the wiki
+         + to answer a question. Subcommand `update` ingests a new source
+         +; subcommand `lint` runs a health check. Use whenever the user 
+         +asks about a concept, entity, paper, or comparison that might l
+         +ive in the wiki, asks to ingest a new source, or asks for a wik
+         +i lint.                                                        
+       4  disable-model-invocation: true
+       5 -argument-hint: "<search query or question>"                    
+       5 +argument-hint: "<search query> | update [source path or URL] | 
+         +lint"                                                          
+       6  ---
+       7  
+       8 -Search `/workspace/wiki` for information relevant to `$ARGUMENT
+         -S` and answer the user's question grounded in what you find.   
+       8 +Act on the wiki at `/workspace/wiki` according to `$ARGUMENTS`.
+         + This skill has three modes: **search** (default), **update**, 
+         +and **lint**.                                                  
+       9  
+      10  ## Layout reminder
+      11  
+      12  The wiki follows the conventions in `/workspace/wiki/SCHEMA.md`
+          :
+      13  
+      14 -- `index.md` — catalog of pages by category (start here)       
+      14 +- `index.md` — catalog of pages by category (start here for sea
+         +rch)                                                           
+      15  - `pages/concepts/` — techniques and ideas
+      16  - `pages/entities/` — systems, models, datasets, orgs
+      17  - `pages/comparisons/` — side-by-side analyses
+      18  - `pages/sources/` — per-paper summary pages
+      19  - `raw/` — immutable source documents
+      20  - `overview.md` — high-level domain synthesis
+      21 +- `log.md` — chronological activity record                     
+      22  
+      22 -## Steps                                                       
+      23 +Read `SCHEMA.md` if you are unsure about page conventions (fron
+         +tmatter, cross-references, source/concept/entity/comparison str
+         +ucture) — it is the authoritative style guide for all modes bel
+         +ow.                                                            
+      24  
+      25 +## Dispatch                                                    
+      26 +                                                               
+      27 +Inspect `$ARGUMENTS`:                                          
+      28 +                                                               
+      29 +- If the first token is `update` → run **Update mode** with the
+         + remainder as the source identifier.                           
+      30 +- If the first token is `lint` → run **Lint mode** (remainder, 
+         +if any, may be `fix` — see below).                             
+      31 +- Otherwise → run **Search mode** with the full `$ARGUMENTS` as
+         + the query.                                                    
+      32 +                                                               
+      33 +---                                                            
+      34 +                                                               
+      35 +## Mode: search (default)                                      
+      36 +                                                               
+      37  1. **Read `index.md`** first to see what pages exist. It is the
+           fastest way to find relevant material without scanning the who
+          le tree.
+      38  
+      26 -2. **Grep for the query terms** across `/workspace/wiki` (exclu
+         -ding `raw/`) to catch matches that the index does not surface. 
+         -Use Grep with the query and relevant synonyms/expansions (e.g. 
+         -"IMU" → also "inertial measurement", "inertial sensor").       
+      39 +2. **Grep for the query terms** across `/workspace/wiki` (exclu
+         +ding `raw/`) to catch matches the index does not surface. Use G
+         +rep with the query and relevant synonyms/expansions (e.g. "IMU"
+         + → also "inertial measurement", "inertial sensor").            
+      40  
+      41  3. **Read the matching pages** in full. Follow `[[page-name]]` 
+          wiki links into related pages when they are clearly relevant to
+           the question.
+      42  
+     ...
+       45     - If the wiki has nothing on the topic, say so plainly — do
+            **not** fill the gap with outside knowledge unless the user a
+           sks for it. Offer to create a page or ingest a source instead.
+       46     - Distinguish between "the wiki states X" and "the wiki imp
+           lies X" — do not overclaim.
+       47  
+       35 -5. **Do not modify the wiki** from this skill. Creating, editi
+          -ng, or reorganizing pages is out of scope here; if the search 
+          -reveals a gap worth filling, mention it and let the user decid
+          -e.                                                            
+       48 +5. **Do not modify the wiki in search mode.** If the search re
+          +veals a gap worth filling, mention it and let the user decide 
+          +whether to run `update` or manually create a page.            
+       49  
+       37 -## Style                                                      
+       50 +---                                                           
+       51  
+       39 -- Keep answers tight. Lead with the direct answer, then cite t
+          -he pages.                                                     
+       52 +## Mode: update — ingest a source                             
+       53 +                                                              
+       54 +Follow the **Ingest a source** workflow from `/workspace/wiki/
+          +SCHEMA.md` (workflow section). The remainder of `$ARGUMENTS` i
+          +s the source identifier; interpret it as follows:             
+       55 +                                                              
+       56 +1. **Identify and acquire the source.**                       
+       57 +   - If it is a path to a file already in `raw/` → read it dir
+          +ectly.                                                        
+       58 +   - If it is a path to a file outside `raw/` → copy it into `
+          +raw/` with a clear kebab-case slug, then read the copy.       
+       59 +   - If it is a URL → fetch it with WebFetch, save a local cop
+          +y into `raw/` under a clear slug (`.md` or `.html`), and read 
+          +the local copy.                                               
+       60 +   - If it is empty → ask the user which source to ingest. Do 
+          +not guess.                                                    
+       61 +                                                              
+       62 +2. **Read the source in full.** For large PDFs, use the Read t
+          +ool's `pages` parameter to read in chunks. Take notes on claim
+          +s, numbers, contributions, limitations, and which existing wik
+          +i pages the source touches.                                   
+       63 +                                                              
+       64 +3. **Create the source page** at `pages/sources/<slug>.md` fol
+          +lowing the *Source pages* convention from SCHEMA.md:          
+       65 +   - YAML frontmatter: `title`, `type: source`, `created`, `up
+          +dated`, `tags`, `sources: [<slug>]` (self-reference optional b
+          +ut consistent with existing pages).                           
+       66 +   - Full citation (authors, title, venue, year, URL/DOI).    
+       67 +   - Key contributions (3–5 bullets).                         
+       68 +   - Technical details relevant to our domain (autonomous driv
+          +ing simulation, neural reconstruction, sensor sim).           
+       69 +   - Limitations and open questions.                          
+       70 +   - Links to concept/entity pages this source informs, via `[
+          +[slug]]`.                                                     
+       71 +   - If `<slug>.md` already exists, do **not** overwrite silen
+          +tly — compare the existing page to the new material, merge, an
+          +d note the merge in `log.md`. If the material is genuinely a d
+          +ifferent source with a colliding slug, bump the slug (e.g. `fo
+          +o-2025b`).                                                    
+       72 +                                                              
+       73 +4. **Update or create concept and entity pages** that this sou
+          +rce informs.                                                  
+       74 +   - For updates: add the new source slug to the existing `sou
+          +rces:` frontmatter field (append, do not replace), bump `updat
+          +ed:`, and add `[[<source-slug>]]` citations where the source s
+          +upports a new claim.                                          
+       75 +   - For new pages: follow the Concept / Entity / Comparison c
+          +onventions from SCHEMA.md. Give every new page inbound links f
+          +rom at least one existing page so it is not orphaned.         
+       76 +                                                              
+       77 +5. **Update `index.md`:**                                     
+       78 +   - Add new pages under the correct category in the right alp
+          +habetical/logical place.                                      
+       79 +   - Bump the `updated:` frontmatter field and the **Stats** l
+          +ine at the bottom to reflect the new counts.                  
+       80 +                                                              
+       81 +6. **Append to `log.md`** under a new dated entry (`## [YYYY-M
+          +M-DD] ingest | <short title>`) describing: the source path and
+          + citation, new pages created, existing pages updated, key take
+          +aways, and any follow-up items or open questions.             
+       82 +                                                              
+       83 +7. **Report to the user:** source path, citation, new/updated 
+          +pages, key takeaways, and any gaps or open questions surfaced.
+          + Be explicit about what was added vs. what was merely cross-li
+          +nked.                                                         
+       84 +                                                              
+       85 +**Important for update mode:**                                
+       86 +- Ground every claim in the source. Flag speculation explicitl
+          +y with `> **Open question:**` callouts.                       
+       87 +- Preserve existing `sources: []` arrays by appending, not rep
+          +lacing.                                                       
+       88 +- Do not invent numbers or citations. If the source is unclear
+          +, say so.                                                     
+       89 +- Do not commit anything — the user manages git manually.     
+       90 +                                                              
+       91 +---                                                           
+       92 +                                                              
+       93 +## Mode: lint                                                 
+       94 +                                                              
+       95 +Follow the **Lint** workflow from `/workspace/wiki/SCHEMA.md` 
+          +(workflow section). Run all of the following checks and report
+          + findings grouped by category. **Do not auto-fix anything unle
+          +ss `$ARGUMENTS` is `lint fix`** (see "Fix mode" below).       
+       96 +                                                              
+       97 +1. **Orphan pages** — pages under `pages/**` (excluding `index
+          +.md`, `overview.md`, `log.md`, `SCHEMA.md`) with no inbound `[
+          +[slug]]` or `[[slug|alias]]` link from any other page. Build a
+          +n inbound-link map with Grep across the wiki and diff against 
+          +the file listing.                                             
+       98 +                                                              
+       99 +2. **Stale content** — source pages (`pages/sources/*.md`) tha
+          +t mention concepts or entities without a dedicated page. Flag 
+          +each missing concept/entity as a suggested new page.          
+      100 +                                                              
+      101 +3. **Contradictions** — direct disagreements between pages: di
+          +fferent numbers for the same metric, incompatible claims about
+          + the same system, conflicting dates. Surface these explicitly 
+          +— do not resolve them silently.                               
+      102 +                                                              
+      103 +4. **Broken wiki-links** — every `[[slug]]` or `[[slug|alias]]
+          +` should resolve to an existing file under `pages/**`, or to `
+          +overview.md`. List any that do not.                           
+      104 +                                                              
+      105 +5. **Frontmatter hygiene** — every page should have valid YAML
+          + frontmatter with `title`, `type`, `created`, `updated`, `tags
+          +`, `sources`. Flag missing or malformed fields. Flag `updated:
+          +` dates older than the last commit touching the file only if t
+          +rivially checkable.                                           
+      106 +                                                              
+      107 +6. **Index consistency** — every page under `pages/**` should 
+          +be referenced from `index.md` under an appropriate category. T
+          +he stats line at the bottom of `index.md` should match actual 
+          +counts of concepts, entities, sources, and comparisons.       
+      108 +                                                              
+      109 +7. **Missing-page suggestions** — topics repeatedly referenced
+          + across pages but without a dedicated page of their own. Sugge
+          +st what to investigate or create next.                        
+      110 +                                                              
+      111 +**Report format:** structured markdown grouped by the seven ca
+          +tegories above. For each finding, give a file path and a one-l
+          +ine explanation. End with a short summary line (e.g. "3 orphan
+          +s, 0 broken links, 1 contradiction, 2 suggestions").          
+      112 +                                                              
+      113 +### Fix mode (`lint fix`)                                     
+      114 +                                                              
+      115 +If `$ARGUMENTS` is `lint fix`, you may automatically fix the f
+          +ollowing **trivial** issues after reporting them:             
+      116 +- Broken wiki-links that clearly typo an existing slug → corre
+          +ct to the actual slug.                                        
+      117 +- Missing frontmatter fields with obvious values (e.g. `update
+          +d:` → today's date; `sources: []` if truly empty).            
+      118 +- Orphans fixable by adding a natural cross-reference from one
+          + already-related existing page (same category or clearly adjac
+          +ent topic).                                                   
+      119 +- `index.md` stats line drift → recompute and update.         
+      120 +- New pages missing from `index.md` → add under the right cate
+          +gory.                                                         
+      121 +                                                              
+      122 +Do **not** auto-fix: contradictions, stale-content gaps, missi
+          +ng-page suggestions, or anything that requires writing new pro
+          +se content. Report those and let the user decide.             
+      123 +                                                              
+      124 +Append a `## [YYYY-MM-DD] lint | <summary>` entry to `log.md` 
+          +describing what was checked and what was fixed.               
+      125 +                                                              
+      126 +---                                                           
+      127 +                                                              
+      128 +## Style (all modes)                                          
+      129 +                                                              
+      130 +- Keep responses tight. Lead with the direct answer or action,
+          + then cite the pages with `file_path:line_number`.            
+      131  - Use the wiki's own terminology when it has a preferred term.
+      132  - If multiple pages disagree, surface the contradiction rather
+            than papering over it.
+      133 +- Distinguish "the wiki says X" from "I inferred X" — do not o
+          +verclaim.                                                     
+
+● Done. The /wiki skill now dispatches on the first argument:
+
+  - /wiki <query> — search mode (unchanged behavior, keeps your lint-corrected
+  excluding raw/ step)
+  - /wiki update <path-or-URL> — ingest workflow from SCHEMA.md: acquire source
+  → read → create pages/sources/<slug>.md → update/create concept & entity pages
+   → update index.md → append to log.md → report. Asks the user if the
+  identifier is empty rather than guessing.
+  - /wiki lint — runs all seven lint checks (orphans, stale content,
+  contradictions, broken wiki-links, frontmatter hygiene, index consistency,
+  missing-page suggestions) and reports grouped findings without modifying
+  anything.
+  - /wiki lint fix — same as lint, but auto-fixes trivial issues (broken-link
+  typos, index drift, fixable orphans, missing frontmatter defaults) and logs
+  the run to log.md. Contradictions and missing-page gaps are still only
+  reported, never fabricated.
+
+  Guardrails worth noting:
+  - Update mode never overwrites an existing source page silently — it merges or
+   bumps the slug.
+  - sources: arrays are appended, not replaced.
+  - No mode commits to git; you stay in control of that.
+  - Search mode still refuses to modify the wiki — you have to explicitly call
+  update or lint fix.
+
+  Want me to test it on something — for example /wiki lint against the current
+  state of the wiki to see if the new GPS/IMU page introduced any issues?
+
+✻ Baked for 1m 57s

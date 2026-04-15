@@ -2,7 +2,7 @@
 title: KITTI
 type: entity
 created: 2026-04-07
-updated: 2026-04-07
+updated: 2026-04-09
 tags: [dataset, benchmark]
 sources: []
 ---
@@ -15,7 +15,7 @@ Karlsruhe Institute of Technology and Toyota Technological Institute dataset. On
 ## Sensor Suite
 - 2 stereo camera pairs (grayscale + color)
 - 1 LiDAR: Velodyne HDL-64E, 64 channels, ~130K points/sweep
-- GPS/IMU
+- [[gps-imu|GPS/IMU]]
 
 ## Role in Our Project
 Used for initial proof-of-concept:

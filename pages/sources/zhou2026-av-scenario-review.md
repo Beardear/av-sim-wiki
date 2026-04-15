@@ -2,7 +2,7 @@
 title: "Zhou et al. 2026 — AV Scenario Generation Review (NeRF & 3DGS)"
 type: source
 created: 2026-04-07
-updated: 2026-04-07
+updated: 2026-04-09
 tags: [review, nerf, 3dgs, scene-reconstruction, scene-editing, survey]
 sources: [zhou2026-av-scenario-review]
 ---
@@ -29,17 +29,17 @@ sources: [zhou2026-av-scenario-review]
 **3.1 Model Improvement** — Improving reconstruction quality:
 - *Quality enhancement*: NeRF++ (unbounded scenes), Mip-NeRF (anti-aliasing), Zip-NeRF (hash grids + anti-aliasing), BARF (joint pose estimation), GeoGaussian (geometry-aware), Scaffold-GS (structured anchors), GES (generalized exponentials), MipSplatting (high-frequency artifacts)
 - *Dynamics & deformation*: D-NeRF, k-NeRF, Dynamic 3D Gaussians, Deformable 3D Gaussians, 4D-GS, GauFRe, 4D Gaussian Splatting, GaussianFlow
-- *AV-specific*: [[neurad]] (first closed-loop evaluation), Driving Gaussian (incremental static + composite dynamic), [[street-gaussians]] (4D SH appearance model), Periodic Vibration Gaussian (single formula for static+dynamic), TCLC-GS (hybrid explicit LiDAR + implicit NeRF), HO-Gaussian (combined LiDAR + camera point density)
+- *AV-specific*: [[neurad]] (first closed-loop evaluation), [[driving-gaussian|Driving Gaussian]] (incremental static + composite dynamic), [[street-gaussians]] (4D SH appearance model), Periodic Vibration Gaussian (single formula for static+dynamic), [[tclc-gs|TCLC-GS]] (hybrid explicit LiDAR + implicit NeRF), [[ho-gaussian|HO-Gaussian]] (combined LiDAR + camera point density)
 
 **3.2 Editing Improvement** — Modifying reconstructed scenes:
 - *NeRF-based*: Editing NeRF (shape/appearance), CLIP-NeRF (text-driven), Instruct-NeRF2NeRF (instruction-based style transfer)
 - *3DGS-based*: Gaussian Editor (text-guided fine-grained editing), Gaussian Grouping (semantic reconstruction + editing), GaussianFrosting (mesh parameterization of Gaussians), TIP-Editor (text+image prompts), GaussCtrl (text-driven multi-view consistent editing)
-- *AV-specific editing*: Neural Scene Graph (actor decomposition), MARS (modular), NeuRAD (dynamic scenario with trajectory changes), [[street-gaussians]] (rotate, move actors)
+- *AV-specific editing*: [[neural-scene-graph|Neural Scene Graph]] (actor decomposition), MARS (modular), [[neurad|NeuRAD]] (dynamic scenario with trajectory changes), [[street-gaussians]] (rotate, move actors)
 
 **3.3 Challenging Reconstruction** — Hard scenarios:
-- *Large-scale*: Mega-NeRF (parallel sub-models), Block-NeRF (city-scale blocks), Switch-NeRF (learned decomposition), CityGaussian (LoD + divide-and-conquer)
+- *Large-scale*: Mega-NeRF (parallel sub-models), Block-NeRF (city-scale blocks), Switch-NeRF (learned decomposition), [[citygaussian|CityGaussian]] (LoD + divide-and-conquer)
 - *Low-light*: HDR-NeRF (wide lighting range), NeRF in the Dark (noisy low-light)
-- *Complex dynamic*: SUDS (static + dynamic + far-field decomposition from 1700 videos, km-scale), HGS-Mapping (hybrid 3DGS with 3 Gaussian types), Kerbl et al. (hierarchical 3DGS for large-scale)
+- *Complex dynamic*: [[suds|SUDS]] (static + dynamic + far-field decomposition from 1700 videos, km-scale), HGS-Mapping (hybrid 3DGS with 3 Gaussian types), Kerbl et al. (hierarchical 3DGS for large-scale)
 
 ### Proposed Framework (Section 4)
 
@@ -67,20 +67,20 @@ Four steps to build a complete AV test system:
 ### Key Systems Referenced (Table 4 — AV-specific)
 | System | Baseline | Focus |
 |--------|----------|-------|
-| Neural Scene Graph | NeRF | Model improvement + editing (actor decomposition) |
+| [[neural-scene-graph|Neural Scene Graph]] | NeRF | Model improvement + editing (actor decomposition) |
 | DNMP | NeRF | Deformable mesh primitives |
 | Panoptic Neural Fields | NeRF | Improved scene graph with semantic segmentation |
 | S-NeRF | NeRF | Improved scene parameterization |
 | MARS | NeRF | Modular (separate static/dynamic rendering) |
-| EmerNeRF | NeRF | Self-supervised static/dynamic/flow decomposition |
-| UniSim | NeRF | Closed-loop evaluation in safety-critical scenarios |
+| [[emernerf|EmerNeRF]] | NeRF | Self-supervised static/dynamic/flow decomposition |
+| [[unisim|UniSim]] | NeRF | Closed-loop evaluation in safety-critical scenarios |
 | [[neurad]] | NeRF | Dynamic/static separated by positional embedding |
-| Driving Gaussian | 3DGS | Incremental static + composite dynamic Gaussians |
+| [[driving-gaussian|Driving Gaussian]] | 3DGS | Incremental static + composite dynamic Gaussians |
 | [[street-gaussians]] | 3DGS | 4D SH appearance, multiple moving objects |
 | Periodic Vibration Gaussian | 3DGS | Single formula for static+dynamic |
-| TCLC-GS | 3DGS | Hybrid LiDAR + camera splatting |
-| HO-Gaussian | 3DGS | Combined LiDAR + camera point density |
-| SUDS | NeRF | Large-scale (km-scale, 1700 videos) |
+| [[tclc-gs|TCLC-GS]] | 3DGS | Hybrid LiDAR + camera splatting |
+| [[ho-gaussian|HO-Gaussian]] | 3DGS | Combined LiDAR + camera point density |
+| [[suds|SUDS]] | NeRF | Large-scale (km-scale, 1700 videos) |
 | HGS-Mapping | 3DGS | Hybrid Gaussian (spherical + 3D + 2D types) |
 
 ## Limitations & Open Questions Identified
@@ -99,14 +99,14 @@ Four steps to build a complete AV test system:
 - **Confirms LiDAR gap**: The paper focuses almost entirely on camera rendering — LiDAR simulation is barely mentioned, reinforcing that [[lidar-simulation]] expertise is a differentiating niche.
 - **Editing taxonomy useful**: The 5 editing patterns in Fig. 9 map directly to our Phase 3 roadmap operations.
 - **CityGaussian and hierarchical methods**: Worth investigating for scaling beyond single-scene reconstruction.
-- **TCLC-GS and HO-Gaussian**: Two systems that combine LiDAR + camera data for splatting — relevant competitors/references to [[splatad]].
+- **[[tclc-gs|TCLC-GS]] and [[ho-gaussian|HO-Gaussian]]**: Two systems that combine LiDAR + camera data for splatting — relevant competitors/references to [[splatad]].
 - **UniSim**: Only NeRF system shown to do closed-loop evaluation — our project should aim to demonstrate this with 3DGS.
 
 ## Cross-References
 - [[3d-gaussian-splatting]] — core representation reviewed
 - [[neurad]] — cited as key AV-specific system
 - [[street-gaussians]] — cited for dynamic actor handling
-- [[splatad]] — not directly cited (CVPR 2025, may postdate the survey's cutoff) but builds on NeuRAD which is covered
+- [[splatad]] — not directly cited (CVPR 2025, may postdate the survey's cutoff) but builds on [[neurad|NeuRAD]] which is covered
 - [[scene-editing]] — Section 3.2 and Section 4.1.2 cover editing approaches extensively
 - [[sim-to-real-transfer]] — the paper's framework Step 4 addresses this indirectly via algorithm deployment
 - [[citygaussian]] — large-scale 3DGS method worth its own page

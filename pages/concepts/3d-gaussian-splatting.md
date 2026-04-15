@@ -2,9 +2,9 @@
 title: 3D Gaussian Splatting
 type: concept
 created: 2026-04-07
-updated: 2026-04-07
+updated: 2026-04-12
 tags: [3dgs, scene-representation, rendering]
-sources: [zhou2026-av-scenario-review]
+sources: [zhou2026-av-scenario-review, gsplat-github-readme]
 ---
 
 # 3D Gaussian Splatting (3DGS)
@@ -27,7 +27,7 @@ Rendering: project Gaussians onto the image plane, sort by depth, alpha-composit
 - [[splatad]]: Camera + LiDAR rendering, dynamic actor decomposition, learned decoders.
 - [[street-gaussians]]: Dynamic urban scenes with per-object Gaussian sets and 4D SH appearance.
 - [[driving-gaussian]]: Incremental static background + composite dynamic actors.
-- LiDAR-GS: Differentiable beam splatting for LiDAR-specific rendering.
+- [[lidar-gs|LiDAR-GS]]: Differentiable beam splatting on a range-view representation for LiDAR-specific rendering.
 - GS-LiDAR: Panoramic LiDAR splatting with beam divergence modeling.
 - [[citygaussian]]: Large-scale city-level 3DGS with LoD and divide-and-conquer.
 
@@ -46,6 +46,9 @@ Rendering: project Gaussians onto the image plane, sort by depth, alpha-composit
 | Training speed | ~30 min | Hours |
 | Memory | High (point storage) | Low (MLP weights) |
 | Novel view quality | Comparable | Comparable |
+
+## Canonical Implementation
+- [[gsplat]] — the de-facto open-source CUDA rasterization library (Nerfstudio ecosystem, JMLR 2025). Per [[gsplat-github-readme]]: up to 4× less GPU memory and 15% less training time than the official 3DGS reference at equivalent PSNR/SSIM/LPIPS on mip-NeRF 360. Most 2025-era 3DGS systems — including [[splatad]] (via a fork) — build on gsplat's rasterization kernel.
 
 ## Related Concepts
 - [[lidar-simulation]] — extending 3DGS to LiDAR modality
